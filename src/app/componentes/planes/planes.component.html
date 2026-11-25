@@ -1,0 +1,56 @@
+<h1>Planes</h1>
+
+<div class="planes">
+  <div class="tarjeta plan">
+    <h3>Gratuito</h3>
+    <div class="precio">$0</div>
+    <ul>
+      <li>Catálogo completo y lector estándar</li>
+      <li>Hasta 5 favoritos</li>
+      <li>Hasta 2 colecciones</li>
+      <li>Recomendaciones de lectura</li>
+    </ul>
+  </div>
+  <div class="tarjeta plan plan-destacado">
+    <h3>Mensual</h3>
+    <div class="precio">$69 <small>MXN / mes</small></div>
+    <p class="libro-autor">IVA incluido</p>
+    <ul>
+      <li>Todo lo del plan gratuito</li>
+      <li>Favoritos y colecciones ilimitados</li>
+      <li>Historial de lectura y continuar donde te quedaste</li>
+      <li>Personalizar el lector: modo oscuro, tamaño de letra, tipografía e interlineado</li>
+    </ul>
+  </div>
+</div>
+
+@if (!auth.usuario()) {
+  <div class="aviso-caja">Para suscribirte necesitas una cuenta. <a routerLink="/login">Inicia sesión</a> o <a routerLink="/registro">regístrate</a>.</div>
+} @else if (auth.plan(); as plan) {
+  @if (plan.esSuscriptor) {
+    <div class="tarjeta">
+      @if (plan.estado === 'activa') {
+        <p class="ok"><strong>Tienes la suscripción mensual activa.</strong></p>
+        @if (plan.fechaRenovacion) { <p>Próxima renovación: {{ plan.fechaRenovacion | date: 'dd/MM/yyyy' }}</p> }
+      } @else {
+        <p><strong>Tu suscripción terminó o está cancelada,</strong> pero conservas los beneficios hasta el {{ plan.fechaFin | date: 'dd/MM/yyyy' }}.</p>
+      }
+      <a class="btn btn-sec" routerLink="/perfil">Administrar mi suscripción</a>
+    </div>
+  } @else if (plan.estado === 'pendiente') {
+    <div class="aviso-caja">Tu pago está pendiente de confirmación. <button class="btn-link" (click)="actualizarEstado()">Actualizar estado</button></div>
+  } @else {
+    <h2>Suscribirme</h2>
+    <p>Pagarás <strong>$69 MXN al mes (IVA incluido)</strong>. Se renueva automáticamente cada mes y puedes cancelar cuando quieras desde tu perfil; conservarás los beneficios hasta el final del periodo pagado.</p>
+    @if (plan.estado === 'pago_fallido') { <p class="error">Tu último pago falló. Puedes intentarlo de nuevo.</p> }
+    @if (errorPago()) { <p class="error">{{ errorPago() }}</p> }
+    @if (procesando()) {
+      <p>Confirmando tu pago...</p>
+    } @else if (info()?.paypal.clientId && info()?.paypal.planId) {
+      <app-pago-paypal [clientId]="info()!.paypal.clientId" [planId]="info()!.paypal.planId" [usuarioId]="auth.usuario()!.id"
+                       (aprobado)="alAprobar($event)" (fallo)="errorPago.set($event)" />
+    } @else {
+      <p class="error">El pago con PayPal aún no está configurado en el servidor.</p>
+    }
+  }
+}

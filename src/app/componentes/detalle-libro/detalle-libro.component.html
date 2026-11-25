@@ -1,0 +1,43 @@
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+  <a class="btn btn-sec" routerLink="/catalogo">Volver al catálogo</a>
+} @else if (libro(); as l) {
+  <div class="detalle">
+    @if (l.portada) {
+      <img class="portada" [src]="l.portada" [alt]="'Portada de ' + l.titulo">
+    } @else {
+      <div class="portada sin-portada">Sin portada</div>
+    }
+    <div>
+      <h1>{{ l.titulo }}</h1>
+      <p>{{ l.autor }}@if (l.anio) { · {{ l.anio }} }</p>
+      <p>
+        <span class="badge badge-gris">{{ l.idioma === 'es' ? 'Español' : 'Inglés' }}</span>
+        @for (c of l.categorias; track c) { <span class="badge">{{ c }}</span> }
+      </p>
+
+      <div class="fila espacio">
+        <a class="btn" [routerLink]="['/leer', l.id]">Leer</a>
+        @if (auth.esSuscriptor()) {
+          <a class="btn btn-sec" [routerLink]="['/leer', l.id]" [queryParams]="{ continuar: 1 }">Continuar donde me quedé</a>
+        }
+        <button class="btn btn-sec" (click)="alternarFavorito()">{{ esFavorito() ? '★ Quitar de favoritos' : '☆ Agregar a favoritos' }}</button>
+      </div>
+
+      <h2>Agregar a una colección</h2>
+      @if (colecciones().length) {
+        <div class="fila">
+          <select [(ngModel)]="coleccionElegida" aria-label="Colección">
+            <option value="">Elige una colección</option>
+            @for (c of colecciones(); track c.id) { <option [value]="c.id">{{ c.nombre }}</option> }
+          </select>
+          <button class="btn btn-sec" (click)="agregarAColeccion()">Agregar</button>
+        </div>
+      } @else {
+        <p class="libro-autor">Aún no tienes colecciones. <a routerLink="/colecciones">Crea una</a>.</p>
+      }
+    </div>
+  </div>
+} @else {
+  <p class="vacio">Cargando...</p>
+}

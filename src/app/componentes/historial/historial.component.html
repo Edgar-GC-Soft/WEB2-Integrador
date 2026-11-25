@@ -1,0 +1,24 @@
+<h1>Historial de lectura</h1>
+@if (cargando()) {
+  <p class="vacio">Cargando...</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (items().length === 0) {
+  <p class="vacio">Todavía no has leído ningún libro. Explora el <a routerLink="/catalogo">catálogo</a>.</p>
+} @else {
+  <div class="tabla-scroll">
+    <table class="tabla">
+      <thead><tr><th>Libro</th><th>Autor</th><th>Última lectura</th><th></th></tr></thead>
+      <tbody>
+        @for (item of items(); track item.libro.id) {
+          <tr>
+            <td><a [routerLink]="['/libro', item.libro.id]">{{ item.libro.titulo }}</a></td>
+            <td>{{ item.libro.autor }}</td>
+            <td>{{ item.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td><a class="btn" [routerLink]="['/leer', item.libro.id]" [queryParams]="{ continuar: 1 }">Continuar</a></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

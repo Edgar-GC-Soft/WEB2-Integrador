@@ -1,0 +1,16 @@
+<form class="formulario" (ngSubmit)="enviar()">
+  <h1>Nueva contraseña</h1>
+  <div class="campo">
+    <label for="nueva">Nueva contraseña</label>
+    <input id="nueva" name="nueva" type="password" [(ngModel)]="nueva" autocomplete="new-password">
+  </div>
+  <div class="campo">
+    <label for="confirmar">Confirmar contraseña</label>
+    <input id="confirmar" name="confirmar" type="password" [(ngModel)]="confirmar" autocomplete="new-password">
+  </div>
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+    <p class="pie-form"><a routerLink="/recuperar">Solicitar un enlace nuevo</a></p>
+  }
+  <button class="btn" type="submit" style="width:100%" [disabled]="cargando()">{{ cargando() ? 'Guardando...' : 'Guardar contraseña' }}</button>
+</form>

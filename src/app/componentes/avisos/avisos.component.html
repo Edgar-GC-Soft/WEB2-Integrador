@@ -1,0 +1,5 @@
+<div class="avisos">
+  @for (a of servicio.avisos(); track a.id) {
+    <div class="aviso" [class.exito]="a.tipo === 'exito'" [class.error]="a.tipo === 'error'">{{ a.texto }}</div>
+  }
+</div>

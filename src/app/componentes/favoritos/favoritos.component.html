@@ -1,0 +1,18 @@
+<h1>Favoritos</h1>
+@if (!auth.esSuscriptor()) {
+  <p class="libro-autor">Plan gratuito: hasta 5 favoritos ({{ libros().length }}/5). <a routerLink="/planes">Suscríbete</a> para tener ilimitados.</p>
+}
+@if (cargando()) {
+  <p class="vacio">Cargando...</p>
+} @else if (libros().length === 0) {
+  <p class="vacio">Aún no tienes favoritos. Explora el <a routerLink="/catalogo">catálogo</a>.</p>
+} @else {
+  <div class="grid-libros espacio">
+    @for (libro of libros(); track libro.id) {
+      <div>
+        <app-libro-card [libro]="libro" />
+        <button class="btn-link" (click)="quitar(libro)">Quitar de favoritos</button>
+      </div>
+    }
+  </div>
+}

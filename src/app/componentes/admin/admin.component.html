@@ -1,0 +1,64 @@
+<h1>Administración del catálogo</h1>
+
+<div class="tarjeta">
+  <h2 style="margin-top:0">Importar libros</h2>
+  <p class="libro-autor">Busca en Open Library y trae solo los libros de acceso público con texto en Internet Archive. Los libros quedan <strong>inactivos</strong>: verifica que sean de dominio público y actívalos para que los usuarios los vean.</p>
+  <form class="fila" (ngSubmit)="importar()">
+    <input type="text" name="consulta" placeholder="Título, autor o tema (ej. don quijote)" [(ngModel)]="consulta">
+    <select name="idioma" [(ngModel)]="idioma" aria-label="Idioma">
+      <option value="es">Español</option>
+      <option value="en">Inglés</option>
+    </select>
+    <input type="text" name="categoria" placeholder="Categoría (opcional)" style="max-width:200px" [(ngModel)]="categoria">
+    <select name="limite" [(ngModel)]="limite" aria-label="Cantidad">
+      <option [ngValue]="10">10 libros</option>
+      <option [ngValue]="20">20 libros</option>
+      <option [ngValue]="50">50 libros</option>
+    </select>
+    <button class="btn" type="submit" [disabled]="importando()">{{ importando() ? 'Importando (puede tardar)...' : 'Importar' }}</button>
+  </form>
+
+  @if (resumen(); as r) {
+    <div class="aviso-caja">
+      Importados: <strong>{{ r.importados }}</strong> · Omitidos (ya existían): <strong>{{ r.omitidos }}</strong> · Con error: <strong>{{ r.errores }}</strong>
+      @if (r.detalle.length) {
+        <ul>@for (d of r.detalle; track $index) { <li>{{ d }}</li> }</ul>
+      }
+    </div>
+  }
+</div>
+
+<h2>Libros importados ({{ total() }})</h2>
+<form class="fila" (ngSubmit)="cargar(1)">
+  <input type="search" name="buscar" placeholder="Buscar por título o autor..." [(ngModel)]="buscar">
+  <button class="btn btn-sec" type="submit">Buscar</button>
+</form>
+
+@if (cargando()) {
+  <p class="vacio">Cargando...</p>
+} @else if (libros().length === 0) {
+  <p class="vacio">No hay libros importados todavía.</p>
+} @else {
+  <div class="tabla-scroll espacio">
+    <table class="tabla">
+      <thead><tr><th>Título</th><th>Autor</th><th>Idioma</th><th>Categorías</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+        @for (l of libros(); track l.id) {
+          <tr>
+            <td>{{ l.titulo }}</td>
+            <td>{{ l.autor }}</td>
+            <td>{{ l.idioma }}</td>
+            <td>@for (c of l.categorias; track c) { <span class="badge">{{ c }}</span> }</td>
+            <td>{{ l.activo ? 'Activo' : 'Inactivo' }}</td>
+            <td><button class="btn" [class.btn-sec]="l.activo" (click)="cambiarEstado(l)">{{ l.activo ? 'Desactivar' : 'Activar' }}</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="paginacion">
+    <button class="btn btn-sec" [disabled]="pagina() <= 1" (click)="cargar(pagina() - 1)">Anterior</button>
+    <span>Página {{ pagina() }} de {{ totalPaginas() }}</span>
+    <button class="btn btn-sec" [disabled]="pagina() >= totalPaginas()" (click)="cargar(pagina() + 1)">Siguiente</button>
+  </div>
+}

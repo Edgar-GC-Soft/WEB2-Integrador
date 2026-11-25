@@ -1,0 +1,9 @@
+<a class="tarjeta libro-card" [routerLink]="['/libro', libro.id]">
+  @if (libro.portada) {
+    <img class="portada" [src]="libro.portada" [alt]="'Portada de ' + libro.titulo" loading="lazy">
+  } @else {
+    <div class="portada sin-portada">Sin portada</div>
+  }
+  <div class="libro-titulo">{{ libro.titulo }}</div>
+  <div class="libro-autor">{{ libro.autor }}</div>
+</a>

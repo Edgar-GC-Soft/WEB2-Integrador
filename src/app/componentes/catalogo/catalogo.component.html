@@ -1,0 +1,36 @@
+<h1>Catálogo</h1>
+
+<form class="fila" (ngSubmit)="cargar(1)">
+  <input type="search" name="buscar" placeholder="Buscar por título o autor..." [(ngModel)]="buscar">
+  <select name="categoria" [(ngModel)]="categoria" (ngModelChange)="cargar(1)" aria-label="Categoría">
+    <option value="">Todas las categorías</option>
+    @for (c of categorias(); track c) { <option [value]="c">{{ c }}</option> }
+  </select>
+  <select name="idioma" [(ngModel)]="idioma" (ngModelChange)="cargar(1)" aria-label="Idioma">
+    <option value="">Todos los idiomas</option>
+    <option value="es">Español</option>
+    <option value="en">Inglés</option>
+  </select>
+  <button class="btn" type="submit">Buscar</button>
+</form>
+
+<p class="libro-autor espacio">{{ total() }} libros</p>
+
+@if (cargando()) {
+  <p class="vacio">Cargando...</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (libros().length === 0) {
+  <p class="vacio">No se encontraron libros con esa búsqueda.</p>
+} @else {
+  <div class="grid-libros">
+    @for (libro of libros(); track libro.id) {
+      <app-libro-card [libro]="libro" />
+    }
+  </div>
+  <div class="paginacion">
+    <button class="btn btn-sec" [disabled]="pagina() <= 1" (click)="cargar(pagina() - 1)">Anterior</button>
+    <span>Página {{ pagina() }} de {{ totalPaginas() }}</span>
+    <button class="btn btn-sec" [disabled]="pagina() >= totalPaginas()" (click)="cargar(pagina() + 1)">Siguiente</button>
+  </div>
+}

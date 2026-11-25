@@ -1,0 +1,16 @@
+<form class="formulario" (ngSubmit)="enviar()">
+  <h1>Recuperar contraseña</h1>
+  @if (mensaje()) {
+    <p class="ok">{{ mensaje() }}</p>
+    <p class="pie-form"><a routerLink="/login">Volver a iniciar sesión</a></p>
+  } @else {
+    <p>Escribe tu correo y te enviaremos un enlace para crear una nueva contraseña.</p>
+    <div class="campo">
+      <label for="correo">Correo electrónico</label>
+      <input id="correo" name="correo" type="email" [(ngModel)]="correo">
+    </div>
+    @if (error()) { <p class="error">{{ error() }}</p> }
+    <button class="btn" type="submit" style="width:100%" [disabled]="cargando()">{{ cargando() ? 'Enviando...' : 'Enviar enlace' }}</button>
+    <p class="pie-form"><a routerLink="/login">Volver</a></p>
+  }
+</form>

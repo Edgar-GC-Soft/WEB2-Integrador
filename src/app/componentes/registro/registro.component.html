@@ -1,0 +1,30 @@
+<form class="formulario" (ngSubmit)="enviar()">
+  <h1>Crear cuenta</h1>
+  <div class="campo">
+    <label for="nombre">Nombre</label>
+    <input id="nombre" name="nombre" [(ngModel)]="nombre" autocomplete="name">
+  </div>
+  <div class="campo">
+    <label for="correo">Correo electrónico</label>
+    <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email">
+  </div>
+  <div class="campo">
+    <label for="contrasena">Contraseña (mínimo 8 caracteres, con letras y números)</label>
+    <input id="contrasena" name="contrasena" type="password" [(ngModel)]="contrasena" autocomplete="new-password">
+  </div>
+  <div class="campo">
+    <label for="confirmar">Confirmar contraseña</label>
+    <input id="confirmar" name="confirmar" type="password" [(ngModel)]="confirmar" autocomplete="new-password">
+  </div>
+  <label class="check">
+    <input type="checkbox" name="aceptaPrivacidad" [(ngModel)]="aceptaPrivacidad">
+    <span>Acepto el <a routerLink="/privacidad" target="_blank">aviso de privacidad</a> y los <a routerLink="/terminos" target="_blank">términos y condiciones</a>.</span>
+  </label>
+  <label class="check">
+    <input type="checkbox" name="mayorEdad" [(ngModel)]="mayorEdad">
+    <span>Confirmo que soy mayor de 18 años.</span>
+  </label>
+  @if (error()) { <p class="error">{{ error() }}</p> }
+  <button class="btn" type="submit" style="width:100%" [disabled]="cargando()">{{ cargando() ? 'Creando cuenta...' : 'Registrarme' }}</button>
+  <p class="pie-form">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+</form>

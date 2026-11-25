@@ -1,0 +1,32 @@
+<h1>Hola, {{ auth.usuario()?.nombre }}</h1>
+
+@if (continuar().length) {
+  <h2>Continuar leyendo</h2>
+  <div class="grid-libros">
+    @for (item of continuar(); track item.libro.id) {
+      <div class="tarjeta libro-card">
+        <div class="libro-titulo">{{ item.libro.titulo }}</div>
+        <div class="libro-autor">{{ item.libro.autor }}</div>
+        <a class="btn" [routerLink]="['/leer', item.libro.id]" [queryParams]="{ continuar: 1 }">Continuar</a>
+      </div>
+    }
+  </div>
+}
+
+<h2>{{ recomendaciones()?.tipo === 'afinidad' ? 'Recomendado para ti' : 'Los más leídos' }}</h2>
+@if (cargando()) {
+  <p class="vacio">Cargando...</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (recomendaciones()?.libros.length) {
+  <div class="grid-libros">
+    @for (libro of recomendaciones()!.libros; track libro.id) {
+      <app-libro-card [libro]="libro" />
+    }
+  </div>
+} @else {
+  <div class="vacio">
+    <p>Todavía no hay libros en el catálogo.</p>
+    @if (auth.esAdmin()) { <a class="btn" routerLink="/admin">Importar libros</a> }
+  </div>
+}

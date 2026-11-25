@@ -1,0 +1,57 @@
+<div class="lector" [class.oscuro]="prefs().modoOscuro">
+  <div class="lector-barra arriba">
+    <a class="btn btn-sec" [routerLink]="['/libro', id_]">← Volver</a>
+    <strong>{{ fragmento()?.titulo }}</strong>
+    <button class="btn btn-sec" (click)="panelAbierto.set(!panelAbierto())">Personalizar</button>
+  </div>
+
+  @if (panelAbierto()) {
+    @if (auth.esSuscriptor()) {
+      <div class="panel-pref">
+        <button class="btn btn-sec" (click)="cambiar({ modoOscuro: !prefs().modoOscuro })">{{ prefs().modoOscuro ? 'Modo claro' : 'Modo oscuro' }}</button>
+        <span>
+          Letra:
+          <button class="btn btn-sec" (click)="cambiarTamano(-1)" aria-label="Letra más pequeña">A-</button>
+          {{ prefs().tamanoLetra }}
+          <button class="btn btn-sec" (click)="cambiarTamano(1)" aria-label="Letra más grande">A+</button>
+        </span>
+        <label>Tipografía
+          <select [value]="prefs().tipografia" (change)="cambiarTipografia($any($event.target).value)">
+            <option value="serif">Con serif</option>
+            <option value="sans">Sin serif</option>
+            <option value="mono">Monoespaciada</option>
+          </select>
+        </label>
+        <label>Interlineado
+          <input type="range" min="1.2" max="2.4" step="0.1" [value]="prefs().interlineado" (change)="cambiarInterlineado($any($event.target).value)">
+        </label>
+      </div>
+    } @else {
+      <div class="panel-pref">
+        <span>🔒 La personalización del lector (modo oscuro, tamaño de letra, tipografía e interlineado) es exclusiva de suscriptores.</span>
+        <a class="btn" routerLink="/planes">Ver planes</a>
+      </div>
+    }
+  }
+
+  <div class="lector-texto" [style.font-size.px]="prefs().tamanoLetra" [style.line-height]="prefs().interlineado" [style.font-family]="fuente()">
+    @if (cargando()) {
+      <p>Cargando el texto del libro...</p>
+    } @else if (error()) {
+      <p class="error">{{ error() }}</p>
+      <button class="btn" (click)="reintentar()">Reintentar</button>
+    } @else {
+      @for (p of fragmento()!.parrafos; track $index) { <p>{{ p }}</p> }
+    }
+  </div>
+
+  @if (fragmento(); as f) {
+    <div class="lector-barra">
+      <button class="btn btn-sec" [disabled]="f.indice === 0 || cargando()" (click)="anterior()">Anterior</button>
+      <input type="range" min="0" [max]="f.total - 1" [value]="f.indice" (change)="irA($any($event.target).value)" aria-label="Posición en el libro">
+      <span>{{ f.indice + 1 }} / {{ f.total }} ({{ progreso() }}%)</span>
+      <button class="btn btn-sec" [disabled]="f.indice >= f.total - 1 || cargando()" (click)="siguiente()">Siguiente</button>
+    </div>
+  }
+</div>
+<p class="libro-autor espacio">Texto obtenido de Internet Archive por OCR: puede contener errores de lectura. Atajos: flechas ← →.</p>

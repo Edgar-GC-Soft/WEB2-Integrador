@@ -1,0 +1,15 @@
+<form class="formulario" (ngSubmit)="enviar()">
+  <h1>Iniciar sesión</h1>
+  <div class="campo">
+    <label for="correo">Correo electrónico</label>
+    <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="username">
+  </div>
+  <div class="campo">
+    <label for="contrasena">Contraseña</label>
+    <input id="contrasena" name="contrasena" type="password" [(ngModel)]="contrasena" autocomplete="current-password">
+  </div>
+  @if (error()) { <p class="error">{{ error() }}</p> }
+  <button class="btn" type="submit" style="width:100%" [disabled]="cargando()">{{ cargando() ? 'Entrando...' : 'Entrar' }}</button>
+  <p class="pie-form"><a routerLink="/recuperar">Olvidé mi contraseña</a></p>
+  <p class="pie-form">¿No tienes cuenta? <a routerLink="/registro">Regístrate</a></p>
+</form>

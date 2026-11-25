@@ -1,0 +1,37 @@
+<h1>Colecciones</h1>
+@if (!auth.esSuscriptor()) {
+  <p class="libro-autor">Plan gratuito: hasta 2 colecciones ({{ colecciones().length }}/2). <a routerLink="/planes">Suscríbete</a> para tener ilimitadas.</p>
+}
+
+<form class="fila espacio" (ngSubmit)="crear()">
+  <input type="text" name="nuevoNombre" placeholder="Nombre de la nueva colección" maxlength="100" [(ngModel)]="nuevoNombre">
+  <button class="btn" type="submit">Crear colección</button>
+</form>
+
+@if (cargando()) {
+  <p class="vacio">Cargando...</p>
+} @else if (colecciones().length === 0) {
+  <p class="vacio">Aún no tienes colecciones.</p>
+} @else {
+  <div class="planes espacio">
+    @for (c of colecciones(); track c.id) {
+      <div class="tarjeta">
+        @if (editandoId() === c.id) {
+          <div class="fila">
+            <input type="text" [name]="'nombre' + c.id" maxlength="100" [(ngModel)]="nombreEditado">
+            <button class="btn" (click)="guardarNombre(c)">Guardar</button>
+            <button class="btn btn-sec" (click)="editandoId.set(null)">Cancelar</button>
+          </div>
+        } @else {
+          <h3 style="margin:0">{{ c.nombre }}</h3>
+          <p class="libro-autor">{{ c.totalLibros }} {{ c.totalLibros === 1 ? 'libro' : 'libros' }}</p>
+          <div class="fila">
+            <a class="btn" [routerLink]="['/colecciones', c.id]">Abrir</a>
+            <button class="btn btn-sec" (click)="empezarEdicion(c)">Renombrar</button>
+            <button class="btn btn-peligro" (click)="eliminar(c)">Eliminar</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

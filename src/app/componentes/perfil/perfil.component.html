@@ -1,0 +1,71 @@
+<h1>Mi perfil</h1>
+
+@if (auth.usuario(); as u) {
+  <div class="planes">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Mis datos</h2>
+      <p><strong>Correo:</strong> {{ u.correo }}</p>
+      <form (ngSubmit)="guardarNombre()">
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" [(ngModel)]="nombre">
+        </div>
+        <button class="btn" type="submit">Guardar nombre</button>
+      </form>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Mi plan</h2>
+      <p>{{ textoPlan() }}</p>
+      @if (auth.plan(); as p) {
+        @if (p.estado === 'activa' && p.fechaRenovacion) { <p>Próxima renovación: {{ p.fechaRenovacion | date: 'dd/MM/yyyy' }}</p> }
+        @if (p.estado === 'cancelada' && p.esSuscriptor && p.fechaFin) { <p>Beneficios hasta: {{ p.fechaFin | date: 'dd/MM/yyyy' }}</p> }
+        @if (p.estado === 'activa') {
+          <button class="btn btn-peligro" [disabled]="cancelando()" (click)="cancelarSuscripcion()">{{ cancelando() ? 'Cancelando...' : 'Cancelar suscripción' }}</button>
+        } @else if (!p.esSuscriptor) {
+          <a class="btn" routerLink="/planes">Ver planes</a>
+        }
+      }
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Cambiar contraseña</h2>
+      <form (ngSubmit)="cambiarContrasena()">
+        <div class="campo">
+          <label for="actual">Contraseña actual</label>
+          <input id="actual" name="actual" type="password" [(ngModel)]="contrasenaActual" autocomplete="current-password">
+        </div>
+        <div class="campo">
+          <label for="nueva">Contraseña nueva</label>
+          <input id="nueva" name="nueva" type="password" [(ngModel)]="contrasenaNueva" autocomplete="new-password">
+        </div>
+        @if (errorContrasena()) { <p class="error">{{ errorContrasena() }}</p> }
+        <button class="btn" type="submit">Cambiar contraseña</button>
+      </form>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Derechos ARCO</h2>
+      <p class="libro-autor">Puedes solicitar el acceso, rectificación, cancelación u oposición al uso de tus datos personales.</p>
+      <form (ngSubmit)="enviarArco()">
+        <div class="campo">
+          <label for="tipoArco">Tipo de solicitud</label>
+          <select id="tipoArco" name="tipoArco" [(ngModel)]="tipoArco">
+            <option value="">Elige una opción</option>
+            <option value="acceso">Acceso</option>
+            <option value="rectificacion">Rectificación</option>
+            <option value="cancelacion">Cancelación</option>
+            <option value="oposicion">Oposición</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="descripcionArco">Detalles (opcional)</label>
+          <textarea id="descripcionArco" name="descripcionArco" maxlength="2000" [(ngModel)]="descripcionArco"></textarea>
+        </div>
+        <button class="btn" type="submit">Enviar solicitud</button>
+      </form>
+    </div>
+  </div>
+} @else {
+  <p class="vacio">Cargando...</p>
+}

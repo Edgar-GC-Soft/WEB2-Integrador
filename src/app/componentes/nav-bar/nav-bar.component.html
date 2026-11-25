@@ -1,0 +1,25 @@
+<header class="barra">
+  <div class="barra-in">
+    <a class="logo" routerLink="/inicio">BookFlix</a>
+    <button class="btn btn-sec hamburguesa" (click)="abierto.set(!abierto())">Menú</button>
+    <nav class="enlaces" [class.abierto]="abierto()" (click)="abierto.set(false)">
+      @if (auth.usuario()) {
+        <a routerLink="/inicio" routerLinkActive="activo">Inicio</a>
+        <a routerLink="/catalogo" routerLinkActive="activo">Catálogo</a>
+        <a routerLink="/favoritos" routerLinkActive="activo">Favoritos</a>
+        <a routerLink="/colecciones" routerLinkActive="activo">Colecciones</a>
+        <a routerLink="/historial" routerLinkActive="activo">Historial</a>
+        <a routerLink="/planes" routerLinkActive="activo">Planes</a>
+        <a routerLink="/perfil" routerLinkActive="activo">Perfil</a>
+        @if (auth.esAdmin()) {
+          <a routerLink="/admin" routerLinkActive="activo">Administración</a>
+        }
+        <button class="btn-link" (click)="auth.logout()">Cerrar sesión</button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="activo">Iniciar sesión</a>
+        <a routerLink="/registro" routerLinkActive="activo">Registrarse</a>
+        <a routerLink="/planes" routerLinkActive="activo">Planes</a>
+      }
+    </nav>
+  </div>
+</header>
