@@ -91,9 +91,15 @@ async function capturarOrden(idUsuario, orderId) {
   if (sub.estado === 'activa') return obtenerPlan(idUsuario);
   if (sub.estado !== 'pendiente') throw new AppError('La orden ya no se puede procesar', 409, 'ORDEN_NO_PROCESABLE');
 
-  let resultado = await paypal.obtenerOrden(orderId);
-  if (resultado.status !== 'COMPLETED') {
-    if (resultado.status !== 'APPROVED') {
+  const orden = await paypal.obtenerOrden(orderId);
+  const unidadOrden = (orden.purchase_units || [])[0];
+  if (orden.id !== orderId || String(unidadOrden && unidadOrden.custom_id) !== String(idUsuario)) {
+    throw new AppError('La orden de PayPal no corresponde a tu cuenta', 409, 'PAGO_NO_VERIFICADO');
+  }
+
+  let resultado = orden;
+  if (orden.status !== 'COMPLETED') {
+    if (orden.status !== 'APPROVED') {
       throw new AppError('PayPal todavía no ha aprobado el pago', 409, 'PAGO_NO_APROBADO');
     }
     try {
@@ -105,14 +111,19 @@ async function capturarOrden(idUsuario, orderId) {
     }
   }
 
-  const unidad = (resultado.purchase_units || [])[0];
-  const captura = (unidad && unidad.payments && unidad.payments.captures || [])
+  let unidad = (resultado.purchase_units || [])[0];
+  let captura = (unidad && unidad.payments && unidad.payments.captures || [])
     .find((pago) => pago.status === 'COMPLETED');
+  if (!captura && resultado.status === 'COMPLETED') {
+    resultado = await paypal.obtenerOrden(orderId);
+    unidad = (resultado.purchase_units || [])[0];
+    captura = (unidad && unidad.payments && unidad.payments.captures || [])
+      .find((pago) => pago.status === 'COMPLETED');
+  }
   const montoValido = captura && captura.amount &&
     captura.amount.currency_code === 'MXN' &&
     Math.round(Number(captura.amount.value) * 100) === Math.round(Number(config.precioMxn) * 100);
-  if (resultado.id !== orderId || resultado.status !== 'COMPLETED' ||
-      String(unidad && unidad.custom_id) !== String(idUsuario) || !montoValido) {
+  if (resultado.id !== orderId || resultado.status !== 'COMPLETED' || !montoValido) {
     throw new AppError('No se pudo verificar el monto y el estado del pago', 409, 'PAGO_NO_VERIFICADO');
   }
 
@@ -136,6 +147,28 @@ async function capturarOrden(idUsuario, orderId) {
     await mail.enviarComprobante(usuario, captura.amount.value, captura.amount.currency_code, fechaInicio);
   }
   return obtenerPlan(idUsuario);
+}
+
+async function reanudarPagoPendiente(idUsuario) {
+  const sub = await suscripcionModel.buscarActualDeUsuario(idUsuario);
+  if (!sub || sub.estado !== 'pendiente') {
+    return { plan: await obtenerPlan(idUsuario) };
+  }
+
+  const orden = await paypal.obtenerOrden(sub.paypal_subscription_id);
+  if (['CREATED', 'PAYER_ACTION_REQUIRED'].includes(orden.status)) {
+    const enlace = (orden.links || []).find((link) => ['payer-action', 'approve'].includes(link.rel));
+    if (!enlace || !enlace.href) {
+      throw new AppError('PayPal no devolvió el enlace para continuar el pago', 502, 'PAYPAL_ERROR');
+    }
+    return { urlPago: enlace.href };
+  }
+  if (orden.status === 'VOIDED') {
+    await suscripcionModel.actualizar(sub.id_suscripcion, { estado: 'pago_fallido' });
+    await sincronizarIndicador(idUsuario);
+    return { plan: await obtenerPlan(idUsuario) };
+  }
+  return { plan: await capturarOrden(idUsuario, sub.paypal_subscription_id) };
 }
 
 // Aplica a la suscripcion local lo que PayPal dice de ella
@@ -277,4 +310,6 @@ function infoPlanes() {
   };
 }
 
-module.exports = { obtenerPlan, crearOrden, capturarOrden, confirmar, cancelar, procesarWebhook, infoPlanes };
+module.exports = {
+  obtenerPlan, crearOrden, capturarOrden, reanudarPagoPendiente, confirmar, cancelar, procesarWebhook, infoPlanes
+};

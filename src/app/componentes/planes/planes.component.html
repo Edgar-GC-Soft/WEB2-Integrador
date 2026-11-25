@@ -38,7 +38,12 @@
       <a class="btn btn-sec" routerLink="/perfil">Administrar mi suscripción</a>
     </div>
   } @else if (plan.estado === 'pendiente') {
-    <div class="aviso-caja">Tu pago está pendiente de confirmación. <button class="btn-link" (click)="actualizarEstado()">Actualizar estado</button></div>
+    <div class="aviso-caja">
+      Tu pago está pendiente de confirmación.
+      <button class="btn-link" [disabled]="actualizando()" (click)="actualizarEstado()">
+        {{ actualizando() ? 'Verificando...' : 'Continuar o confirmar pago' }}
+      </button>
+    </div>
   } @else {
     <h2>Suscribirme</h2>
     <p>Realizarás un pago único de <strong>$69 MXN</strong> por un mes de acceso. No hay renovación automática; puedes volver a pagar cuando venza.</p>

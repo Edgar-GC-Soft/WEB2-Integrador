@@ -22,6 +22,7 @@ export class PlanesComponent implements OnInit {
 
   info = signal<InfoPlanes | null>(null);
   procesando = signal(false);
+  actualizando = signal(false);
   errorPago = signal('');
 
   ngOnInit() {
@@ -43,5 +44,25 @@ export class PlanesComponent implements OnInit {
     });
   }
 
-  actualizarEstado() { this.auth.cargarPerfil().subscribe({ error: (e) => this.avisos.error(mensajeError(e)) }); }
+  actualizarEstado() {
+    this.actualizando.set(true);
+    this.suscripcion.reanudarPagoPendiente().subscribe({
+      next: (resultado) => {
+        this.actualizando.set(false);
+        if (resultado.urlPago) {
+          window.location.assign(resultado.urlPago);
+          return;
+        }
+        if (resultado.plan) {
+          this.auth.plan.set(resultado.plan);
+          if (resultado.plan.esSuscriptor) this.avisos.exito('¡Pago confirmado! Tu acceso mensual está activo.');
+          else this.avisos.info('PayPal todavía no confirma el pago.');
+        }
+      },
+      error: (e) => {
+        this.actualizando.set(false);
+        this.avisos.error(mensajeError(e));
+      }
+    });
+  }
 }

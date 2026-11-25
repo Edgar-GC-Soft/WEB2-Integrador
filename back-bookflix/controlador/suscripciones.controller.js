@@ -15,6 +15,10 @@ exports.capturarOrden = asyncHandler(async (req, res) => {
   res.json(await suscripcionService.capturarOrden(req.usuario.id, req.params.orderId));
 });
 
+exports.reanudarPagoPendiente = asyncHandler(async (req, res) => {
+  res.json(await suscripcionService.reanudarPagoPendiente(req.usuario.id));
+});
+
 exports.confirmar = asyncHandler(async (req, res) => {
   res.json(await suscripcionService.confirmar(req.usuario.id, req.body.suscripcionId));
 });
