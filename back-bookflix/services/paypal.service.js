@@ -54,6 +54,9 @@ async function api(metodo, ruta, cuerpo) {
 
 const obtenerSuscripcion = (id) => api('GET', `/v1/billing/subscriptions/${encodeURIComponent(id)}`);
 const cancelarSuscripcion = (id, motivo) => api('POST', `/v1/billing/subscriptions/${encodeURIComponent(id)}/cancel`, { reason: motivo });
+const crearOrden = (cuerpo) => api('POST', '/v2/checkout/orders', cuerpo);
+const obtenerOrden = (id) => api('GET', `/v2/checkout/orders/${encodeURIComponent(id)}`);
+const capturarOrden = (id) => api('POST', `/v2/checkout/orders/${encodeURIComponent(id)}/capture`);
 
 // Verifica que el webhook realmente venga de PayPal
 async function verificarWebhook(headers, evento) {
@@ -78,4 +81,7 @@ const crearProducto = (cuerpo) => api('POST', '/v1/catalogs/products', cuerpo);
 const crearPlan = (cuerpo) => api('POST', '/v1/billing/plans', cuerpo);
 const crearWebhook = (cuerpo) => api('POST', '/v1/notifications/webhooks', cuerpo);
 
-module.exports = { obtenerSuscripcion, cancelarSuscripcion, verificarWebhook, crearProducto, crearPlan, crearWebhook };
+module.exports = {
+  obtenerSuscripcion, cancelarSuscripcion, verificarWebhook, crearProducto, crearPlan, crearWebhook,
+  crearOrden, obtenerOrden, capturarOrden
+};

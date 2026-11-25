@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: 'recuperar', title: 'Recuperar contraseña', loadComponent: () => import('./componentes/recuperar/recuperar.component').then((m) => m.RecuperarComponent) },
   { path: 'restablecer/:token', title: 'Nueva contraseña', loadComponent: () => import('./componentes/restablecer/restablecer.component').then((m) => m.RestablecerComponent) },
   { path: 'planes', title: 'Planes', loadComponent: () => import('./componentes/planes/planes.component').then((m) => m.PlanesComponent) },
+  { path: 'pago-paypal', title: 'Confirmar pago', canActivate: [authGuard], loadComponent: () => import('./componentes/pago-paypal/pago-paypal-retorno.component').then((m) => m.PagoPaypalRetornoComponent) },
   { path: 'privacidad', title: 'Aviso de privacidad', loadComponent: () => import('./componentes/privacidad/privacidad.component').then((m) => m.PrivacidadComponent) },
   { path: 'terminos', title: 'Términos y condiciones', loadComponent: () => import('./componentes/terminos/terminos.component').then((m) => m.TerminosComponent) },
   { path: 'sin-acceso', title: 'Sin acceso', loadComponent: () => import('./componentes/sin-acceso/sin-acceso.component').then((m) => m.SinAccesoComponent) },

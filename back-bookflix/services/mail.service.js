@@ -48,7 +48,7 @@ const enviarBienvenida = (u) =>
 const enviarComprobante = (u, monto, moneda, fechaPago) =>
   enviar(u.correo, 'Comprobante de pago - BookFlix', plantilla('Pago recibido',
     `<p>Recibimos tu pago de <b>$${Number(monto).toFixed(2)} ${esc(moneda)}</b> el ${fecha(fechaPago)}.</p>
-     <p>Tu suscripción mensual de BookFlix está activa.</p>`));
+     <p>Tu acceso mensual a BookFlix está activo.</p>`));
 
 const enviarAvisoRenovacion = (u, proximaFecha) =>
   enviar(u.correo, 'Tu suscripción se renovó - BookFlix', plantilla('Suscripción renovada',

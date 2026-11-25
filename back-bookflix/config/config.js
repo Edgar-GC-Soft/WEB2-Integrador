@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-const sandbox = (process.env.PAYPAL_MODO || 'sandbox') === 'sandbox';
-
 module.exports = {
   puerto: Number(process.env.PORT) || 3000,
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:4200',
@@ -21,7 +19,7 @@ module.exports = {
   fragmentoCaracteres: 2500,
   contactoApi: process.env.CONTACTO_API || 'contacto@bookflix.local',
   paypal: {
-    urlBase: sandbox ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com',
+    urlBase: process.env.PAYPAL_BASE_URL || 'https://api-m.sandbox.paypal.com',
     clientId: process.env.PAYPAL_CLIENT_ID || '',
     clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',
     planId: process.env.PAYPAL_PLAN_ID || '',

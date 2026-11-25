@@ -7,6 +7,14 @@ exports.estado = asyncHandler(async (req, res) => {
   res.json(await suscripcionService.obtenerPlan(req.usuario.id));
 });
 
+exports.crearOrden = asyncHandler(async (req, res) => {
+  res.status(201).json(await suscripcionService.crearOrden(req.usuario.id));
+});
+
+exports.capturarOrden = asyncHandler(async (req, res) => {
+  res.json(await suscripcionService.capturarOrden(req.usuario.id, req.params.orderId));
+});
+
 exports.confirmar = asyncHandler(async (req, res) => {
   res.json(await suscripcionService.confirmar(req.usuario.id, req.body.suscripcionId));
 });

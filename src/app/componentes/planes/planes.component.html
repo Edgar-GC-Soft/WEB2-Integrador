@@ -14,7 +14,7 @@
   <div class="tarjeta plan plan-destacado">
     <h3>Mensual</h3>
     <div class="precio">$69 <small>MXN / mes</small></div>
-    <p class="libro-autor">IVA incluido</p>
+    <p class="libro-autor">IVA incluido. Pago único por un mes de acceso, sin renovación automática.</p>
     <ul>
       <li>Todo lo del plan gratuito</li>
       <li>Favoritos y colecciones ilimitados</li>
@@ -30,8 +30,8 @@
   @if (plan.esSuscriptor) {
     <div class="tarjeta">
       @if (plan.estado === 'activa') {
-        <p class="ok"><strong>Tienes la suscripción mensual activa.</strong></p>
-        @if (plan.fechaRenovacion) { <p>Próxima renovación: {{ plan.fechaRenovacion | date: 'dd/MM/yyyy' }}</p> }
+        <p class="ok"><strong>Tienes acceso mensual activo.</strong></p>
+        @if (plan.fechaFin) { <p>Tu acceso vence el {{ plan.fechaFin | date: 'dd/MM/yyyy' }}.</p> }
       } @else {
         <p><strong>Tu suscripción terminó o está cancelada,</strong> pero conservas los beneficios hasta el {{ plan.fechaFin | date: 'dd/MM/yyyy' }}.</p>
       }
@@ -41,14 +41,13 @@
     <div class="aviso-caja">Tu pago está pendiente de confirmación. <button class="btn-link" (click)="actualizarEstado()">Actualizar estado</button></div>
   } @else {
     <h2>Suscribirme</h2>
-    <p>Pagarás <strong>$69 MXN al mes (IVA incluido)</strong>. Se renueva automáticamente cada mes y puedes cancelar cuando quieras desde tu perfil; conservarás los beneficios hasta el final del periodo pagado.</p>
+    <p>Realizarás un pago único de <strong>$69 MXN</strong> por un mes de acceso. No hay renovación automática; puedes volver a pagar cuando venza.</p>
     @if (plan.estado === 'pago_fallido') { <p class="error">Tu último pago falló. Puedes intentarlo de nuevo.</p> }
     @if (errorPago()) { <p class="error">{{ errorPago() }}</p> }
     @if (procesando()) {
       <p>Confirmando tu pago...</p>
-    } @else if (info()?.paypal.clientId && info()?.paypal.planId) {
-      <app-pago-paypal [clientId]="info()!.paypal.clientId" [planId]="info()!.paypal.planId" [usuarioId]="auth.usuario()!.id"
-                       (aprobado)="alAprobar($event)" (fallo)="errorPago.set($event)" />
+    } @else if (info()?.paypal.disponible) {
+      <app-pago-paypal (continuar)="iniciarPago()" />
     } @else {
       <p class="error">El pago con PayPal aún no está configurado en el servidor.</p>
     }

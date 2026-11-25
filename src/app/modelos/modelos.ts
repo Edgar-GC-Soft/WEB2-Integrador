@@ -25,7 +25,7 @@ export interface ColeccionDetalle { id: number; nombre: string; libros: Libro[];
 
 export interface ItemHistorial { libro: Libro; ultimoPunto: number; fecha: string; }
 
-export interface InfoPlanes { precio: number; moneda: string; paypal: { clientId: string; planId: string }; }
+export interface InfoPlanes { precio: number; moneda: string; paypal: { disponible: boolean }; }
 
 export interface ResumenImportacion { importados: number; omitidos: number; errores: number; detalle: string[]; }
 

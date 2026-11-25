@@ -8,6 +8,8 @@ export class SuscripcionService {
   private http = inject(HttpClient);
 
   planes() { return this.http.get<InfoPlanes>(`${API_URL}/suscripciones/planes`); }
+  crearOrden() { return this.http.post<{ id: string; total: number; urlPago: string }>(`${API_URL}/suscripciones/orden`, {}); }
+  capturarOrden(orderId: string) { return this.http.post<PlanUsuario>(`${API_URL}/suscripciones/capturar/${encodeURIComponent(orderId)}`, {}); }
   confirmar(suscripcionId: string) { return this.http.post<PlanUsuario>(`${API_URL}/suscripciones/confirmar`, { suscripcionId }); }
   cancelar() { return this.http.post<PlanUsuario>(`${API_URL}/suscripciones/cancelar`, {}); }
 }

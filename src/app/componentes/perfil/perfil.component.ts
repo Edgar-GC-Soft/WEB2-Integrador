@@ -33,7 +33,7 @@ export class PerfilComponent {
     const p = this.auth.plan();
     if (!p) return '';
     switch (p.estado) {
-      case 'activa': return 'Suscripción mensual activa';
+      case 'activa': return 'Acceso mensual activo';
       case 'cancelada': return p.esSuscriptor ? 'Suscripción cancelada (conservas los beneficios hasta el fin del periodo)' : 'Plan gratuito (suscripción cancelada)';
       case 'pago_fallido': return p.esSuscriptor ? 'Pago fallido (conservas los beneficios hasta el fin del periodo)' : 'Plan gratuito (el último pago falló)';
       case 'pendiente': return 'Pago pendiente de confirmación';

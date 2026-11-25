@@ -19,8 +19,12 @@ const aFecha = (valor) => (valor ? new Date(valor) : null);
 // Plan actual del usuario. Es suscriptor si la suscripcion esta activa o si cancelo
 // pero aun no termina el periodo que ya pago.
 async function obtenerPlan(idUsuario) {
-  const sub = await suscripcionModel.buscarActualDeUsuario(idUsuario);
+  let sub = await suscripcionModel.buscarActualDeUsuario(idUsuario);
   if (!sub) return { esSuscriptor: false, estado: 'ninguna', fechaRenovacion: null, fechaFin: null };
+  if (sub.estado === 'activa' && sub.fecha_fin && new Date(sub.fecha_fin) <= new Date()) {
+    await suscripcionModel.actualizar(sub.id_suscripcion, { estado: 'expirada' });
+    sub = { ...sub, estado: 'expirada' };
+  }
   const dentroDePeriodo = sub.fecha_fin && new Date(sub.fecha_fin) > new Date();
   const esSuscriptor = sub.estado === 'activa' || (['cancelada', 'pago_fallido', 'expirada'].includes(sub.estado) && !!dentroDePeriodo);
   return {
@@ -34,6 +38,104 @@ async function obtenerPlan(idUsuario) {
 async function sincronizarIndicador(idUsuario) {
   const plan = await obtenerPlan(idUsuario);
   await usuarioModel.actualizarIndicadorSuscripcion(idUsuario, plan.esSuscriptor);
+}
+
+function sumarUnMes(fecha) {
+  const resultado = new Date(fecha);
+  const dia = resultado.getDate();
+  resultado.setDate(1);
+  resultado.setMonth(resultado.getMonth() + 1);
+  const ultimoDia = new Date(resultado.getFullYear(), resultado.getMonth() + 1, 0).getDate();
+  resultado.setDate(Math.min(dia, ultimoDia));
+  return resultado;
+}
+
+async function crearOrden(idUsuario) {
+  const plan = await obtenerPlan(idUsuario);
+  if (plan.esSuscriptor) throw new AppError('Ya tienes acceso activo a BookFlix', 409, 'SUSCRIPCION_ACTIVA');
+
+  const orden = await paypal.crearOrden({
+    intent: 'CAPTURE',
+    purchase_units: [{
+      custom_id: String(idUsuario),
+      description: 'Acceso mensual a BookFlix',
+      amount: { currency_code: 'MXN', value: Number(config.precioMxn).toFixed(2) }
+    }],
+    payment_source: {
+      paypal: {
+        experience_context: {
+          brand_name: 'BookFlix',
+          user_action: 'PAY_NOW',
+          shipping_preference: 'NO_SHIPPING',
+          return_url: `${config.frontendUrl}/pago-paypal`,
+          cancel_url: `${config.frontendUrl}/planes?paypal=cancel`
+        }
+      }
+    }
+  });
+  const enlace = orden.links && orden.links.find((link) => ['payer-action', 'approve'].includes(link.rel));
+  if (!orden.id || !enlace) {
+    throw new AppError('PayPal no devolvió el enlace para completar el pago', 502, 'PAYPAL_ERROR');
+  }
+  await suscripcionModel.crear(idUsuario, orden.id);
+  return { id: orden.id, total: config.precioMxn, urlPago: enlace.href };
+}
+
+async function capturarOrden(idUsuario, orderId) {
+  if (!orderId) throw new AppError('Falta el identificador de la orden', 400, 'DATO_INVALIDO');
+  const sub = await suscripcionModel.buscarPorPaypalId(orderId);
+  if (!sub) throw new AppError('No se encontró la orden de pago', 404, 'ORDEN_NO_ENCONTRADA');
+  if (String(sub.id_usuario) !== String(idUsuario)) {
+    throw new AppError('La orden no pertenece a tu cuenta', 403, 'SIN_PERMISO');
+  }
+  if (sub.estado === 'activa') return obtenerPlan(idUsuario);
+  if (sub.estado !== 'pendiente') throw new AppError('La orden ya no se puede procesar', 409, 'ORDEN_NO_PROCESABLE');
+
+  let resultado = await paypal.obtenerOrden(orderId);
+  if (resultado.status !== 'COMPLETED') {
+    if (resultado.status !== 'APPROVED') {
+      throw new AppError('PayPal todavía no ha aprobado el pago', 409, 'PAGO_NO_APROBADO');
+    }
+    try {
+      resultado = await paypal.capturarOrden(orderId);
+    } catch (error) {
+      const actualizado = await paypal.obtenerOrden(orderId);
+      if (actualizado.status !== 'COMPLETED') throw error;
+      resultado = actualizado;
+    }
+  }
+
+  const unidad = (resultado.purchase_units || [])[0];
+  const captura = (unidad && unidad.payments && unidad.payments.captures || [])
+    .find((pago) => pago.status === 'COMPLETED');
+  const montoValido = captura && captura.amount &&
+    captura.amount.currency_code === 'MXN' &&
+    Math.round(Number(captura.amount.value) * 100) === Math.round(Number(config.precioMxn) * 100);
+  if (resultado.id !== orderId || resultado.status !== 'COMPLETED' ||
+      String(unidad && unidad.custom_id) !== String(idUsuario) || !montoValido) {
+    throw new AppError('No se pudo verificar el monto y el estado del pago', 409, 'PAGO_NO_VERIFICADO');
+  }
+
+  const fechaInicio = aFecha(captura.create_time) || new Date();
+  const pagoRegistrado = await suscripcionModel.registrarPago({
+    idSuscripcion: sub.id_suscripcion,
+    paypalPaymentId: captura.id,
+    monto: captura.amount.value,
+    moneda: captura.amount.currency_code,
+    fecha: fechaInicio
+  });
+  await suscripcionModel.actualizar(sub.id_suscripcion, {
+    estado: 'activa',
+    fecha_inicio: fechaInicio,
+    fecha_proxima_renovacion: null,
+    fecha_fin: sumarUnMes(fechaInicio)
+  });
+  await sincronizarIndicador(idUsuario);
+  if (pagoRegistrado) {
+    const usuario = await usuarioModel.buscarPorId(idUsuario);
+    await mail.enviarComprobante(usuario, captura.amount.value, captura.amount.currency_code, fechaInicio);
+  }
+  return obtenerPlan(idUsuario);
 }
 
 // Aplica a la suscripcion local lo que PayPal dice de ella
@@ -171,8 +273,8 @@ function infoPlanes() {
   return {
     precio: config.precioMxn,
     moneda: 'MXN',
-    paypal: { clientId: config.paypal.clientId, planId: config.paypal.planId }
+    paypal: { disponible: Boolean(config.paypal.clientId && config.paypal.clientSecret) }
   };
 }
 
-module.exports = { obtenerPlan, confirmar, cancelar, procesarWebhook, infoPlanes };
+module.exports = { obtenerPlan, crearOrden, capturarOrden, confirmar, cancelar, procesarWebhook, infoPlanes };
