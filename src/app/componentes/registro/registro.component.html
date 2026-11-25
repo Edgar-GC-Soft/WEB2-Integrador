@@ -1,30 +1,41 @@
-<form class="formulario" (ngSubmit)="enviar()">
-  <h1>Crear cuenta</h1>
-  <div class="campo">
-    <label for="nombre">Nombre</label>
-    <input id="nombre" name="nombre" [(ngModel)]="nombre" autocomplete="name">
+<div class="auth-vista">
+  <div class="auth-lado llueve">
+    <div class="colina c1"></div><div class="colina c2"></div><div class="luz"></div>
+    <i style="left:61%;--h:89px;--d:1.5s;--t:-0.3s"></i><i style="left:88%;--h:50px;--d:1.4s;--t:-0.9s"></i><i style="left:79%;--h:55px;--d:1.4s;--t:-1.9s"></i><i style="left:91%;--h:52px;--d:1.8s;--t:-0.3s"></i><i style="left:59%;--h:96px;--d:1.5s;--t:-0.3s"></i><i style="left:8%;--h:57px;--d:1.2s;--t:-1.7s"></i><i style="left:77%;--h:54px;--d:1.9s;--t:-0.8s"></i><i style="left:97%;--h:56px;--d:2.0s;--t:-0.4s"></i><i style="left:30%;--h:96px;--d:1.9s;--t:-1.8s"></i><i style="left:36%;--h:63px;--d:1.5s;--t:-0.7s"></i><i style="left:7%;--h:62px;--d:1.8s;--t:-0.0s"></i><i style="left:54%;--h:53px;--d:2.0s;--t:-1.7s"></i><i style="left:19%;--h:51px;--d:1.3s;--t:-1.5s"></i><i style="left:16%;--h:88px;--d:1.1s;--t:-1.5s"></i><i style="left:27%;--h:62px;--d:1.4s;--t:-1.8s"></i><i style="left:19%;--h:84px;--d:2.0s;--t:-1.0s"></i><i style="left:75%;--h:81px;--d:1.6s;--t:-0.4s"></i><i style="left:10%;--h:75px;--d:1.3s;--t:-1.5s"></i><i style="left:91%;--h:87px;--d:1.2s;--t:-1.9s"></i><i style="left:94%;--h:52px;--d:1.2s;--t:-1.1s"></i>
+    <a class="auth-logo" routerLink="/inicio">BookFlix</a>
+    <div class="auth-frase">Tu próximo libro<br>ya te está esperando.</div>
   </div>
-  <div class="campo">
-    <label for="correo">Correo electrónico</label>
-    <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email">
+  <div class="auth-form">
+  <form class="formulario" (ngSubmit)="enviar()">
+      <img class="icono" src="bookflix-icono.png" alt="">
+          <h1>Crear cuenta</h1>
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" [(ngModel)]="nombre" autocomplete="name">
+      </div>
+      <div class="campo">
+        <label for="correo">Correo electrónico</label>
+        <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email">
+      </div>
+      <div class="campo">
+        <label for="contrasena">Contraseña (mínimo 8 caracteres, con letras y números)</label>
+        <input id="contrasena" name="contrasena" type="password" [(ngModel)]="contrasena" autocomplete="new-password">
+      </div>
+      <div class="campo">
+        <label for="confirmar">Confirmar contraseña</label>
+        <input id="confirmar" name="confirmar" type="password" [(ngModel)]="confirmar" autocomplete="new-password">
+      </div>
+      <label class="check">
+        <input type="checkbox" name="aceptaPrivacidad" [(ngModel)]="aceptaPrivacidad">
+        <span>Acepto el <a routerLink="/privacidad" target="_blank">aviso de privacidad</a> y los <a routerLink="/terminos" target="_blank">términos y condiciones</a>.</span>
+      </label>
+      <label class="check">
+        <input type="checkbox" name="mayorEdad" [(ngModel)]="mayorEdad">
+        <span>Confirmo que soy mayor de 18 años.</span>
+      </label>
+      @if (error()) { <p class="error">{{ error() }}</p> }
+      <button class="btn" type="submit" [disabled]="cargando()">{{ cargando() ? 'Creando cuenta...' : 'Registrarme' }}</button>
+      <p class="pie-form">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </form>
   </div>
-  <div class="campo">
-    <label for="contrasena">Contraseña (mínimo 8 caracteres, con letras y números)</label>
-    <input id="contrasena" name="contrasena" type="password" [(ngModel)]="contrasena" autocomplete="new-password">
-  </div>
-  <div class="campo">
-    <label for="confirmar">Confirmar contraseña</label>
-    <input id="confirmar" name="confirmar" type="password" [(ngModel)]="confirmar" autocomplete="new-password">
-  </div>
-  <label class="check">
-    <input type="checkbox" name="aceptaPrivacidad" [(ngModel)]="aceptaPrivacidad">
-    <span>Acepto el <a routerLink="/privacidad" target="_blank">aviso de privacidad</a> y los <a routerLink="/terminos" target="_blank">términos y condiciones</a>.</span>
-  </label>
-  <label class="check">
-    <input type="checkbox" name="mayorEdad" [(ngModel)]="mayorEdad">
-    <span>Confirmo que soy mayor de 18 años.</span>
-  </label>
-  @if (error()) { <p class="error">{{ error() }}</p> }
-  <button class="btn" type="submit" style="width:100%" [disabled]="cargando()">{{ cargando() ? 'Creando cuenta...' : 'Registrarme' }}</button>
-  <p class="pie-form">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
-</form>
+</div>

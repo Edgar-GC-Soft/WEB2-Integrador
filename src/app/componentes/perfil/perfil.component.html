@@ -1,9 +1,11 @@
-<h1>Mi perfil</h1>
-
 @if (auth.usuario(); as u) {
-  <div class="planes">
+  <div class="perfil-cab">
+    <div class="avatar-grande">{{ u.nombre?.charAt(0) }}</div>
+    <div><h1 style="font-size:52px;letter-spacing:-1.5px;margin:0">{{ u.nombre }}</h1><div style="font-size:15px;color:var(--soft)">Cuenta de lector</div></div>
+  </div>
+  <div class="perfil-grid">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Mis datos</h2>
+      <h2>Tus datos</h2>
       <p><strong>Correo:</strong> {{ u.correo }}</p>
       <form (ngSubmit)="guardarNombre()">
         <div class="campo">
@@ -14,9 +16,9 @@
       </form>
     </div>
 
-    <div class="tarjeta">
-      <h2 style="margin-top:0">Mi plan</h2>
-      <p>{{ textoPlan() }}</p>
+    <div class="tarjeta plan-oscuro">
+      <div class="etq">Tu plan</div>
+      <div class="plan-nombre">{{ textoPlan() }}</div>
       @if (auth.plan(); as p) {
         @if (p.estado === 'activa' && p.fechaFin) { <p>Acceso hasta: {{ p.fechaFin | date: 'dd/MM/yyyy' }}</p> }
         @else if (p.estado === 'activa' && p.fechaRenovacion) { <p>Próxima renovación: {{ p.fechaRenovacion | date: 'dd/MM/yyyy' }}</p> }
@@ -30,7 +32,7 @@
     </div>
 
     <div class="tarjeta">
-      <h2 style="margin-top:0">Cambiar contraseña</h2>
+      <h2>Cambiar contraseña</h2>
       <form (ngSubmit)="cambiarContrasena()">
         <div class="campo">
           <label for="actual">Contraseña actual</label>
@@ -46,24 +48,15 @@
     </div>
 
     <div class="tarjeta">
-      <h2 style="margin-top:0">Derechos ARCO</h2>
-      <p class="libro-autor">Puedes solicitar el acceso, rectificación, cancelación u oposición al uso de tus datos personales.</p>
-      <form (ngSubmit)="enviarArco()">
+      <h2>Eliminar cuenta</h2>
+      <p class="libro-autor">Se borrarán tu cuenta, favoritos, colecciones e historial de lectura. Si tienes una suscripción con renovación automática, se cancelará. Esta acción no se puede deshacer.</p>
+      <form (ngSubmit)="eliminarCuenta()">
         <div class="campo">
-          <label for="tipoArco">Tipo de solicitud</label>
-          <select id="tipoArco" name="tipoArco" [(ngModel)]="tipoArco">
-            <option value="">Elige una opción</option>
-            <option value="acceso">Acceso</option>
-            <option value="rectificacion">Rectificación</option>
-            <option value="cancelacion">Cancelación</option>
-            <option value="oposicion">Oposición</option>
-          </select>
+          <label for="confirmarEliminar">Escribe tu contraseña para confirmar</label>
+          <input id="confirmarEliminar" name="confirmarEliminar" type="password" [(ngModel)]="contrasenaEliminar" autocomplete="current-password">
         </div>
-        <div class="campo">
-          <label for="descripcionArco">Detalles (opcional)</label>
-          <textarea id="descripcionArco" name="descripcionArco" maxlength="2000" [(ngModel)]="descripcionArco"></textarea>
-        </div>
-        <button class="btn" type="submit">Enviar solicitud</button>
+        @if (errorEliminar()) { <p class="error">{{ errorEliminar() }}</p> }
+        <button class="btn btn-peligro" type="submit" [disabled]="eliminando()">{{ eliminando() ? 'Eliminando...' : 'Eliminar cuenta' }}</button>
       </form>
     </div>
   </div>

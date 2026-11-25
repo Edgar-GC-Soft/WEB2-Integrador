@@ -3,8 +3,6 @@ const authService = require('../services/auth.service');
 const suscripcionService = require('../services/suscripcion.service');
 const { AppError, asyncHandler } = require('../middleware/errores');
 
-const TIPOS_ARCO = ['acceso', 'rectificacion', 'cancelacion', 'oposicion'];
-
 exports.perfil = asyncHandler(async (req, res) => {
   const u = await usuarioModel.buscarPorId(req.usuario.id);
   if (!u) throw new AppError('Usuario no encontrado', 404, 'NO_ENCONTRADO');
@@ -26,8 +24,7 @@ exports.cambiarContrasena = asyncHandler(async (req, res) => {
   res.json({ mensaje: 'Contraseña actualizada' });
 });
 
-exports.solicitudArco = asyncHandler(async (req, res) => {
-  if (!TIPOS_ARCO.includes(req.body.tipo)) throw new AppError('Elige el tipo de solicitud', 400, 'DATO_INVALIDO');
-  await usuarioModel.crearSolicitudArco(req.usuario.id, req.body.tipo, String(req.body.descripcion || '').slice(0, 2000));
-  res.status(201).json({ mensaje: 'Recibimos tu solicitud. Te responderemos por correo.' });
+exports.eliminarCuenta = asyncHandler(async (req, res) => {
+  await authService.eliminarCuenta(req.usuario.id, req.body.contrasena);
+  res.json({ mensaje: 'Tu cuenta fue eliminada' });
 });

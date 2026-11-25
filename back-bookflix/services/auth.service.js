@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 const usuarioModel = require('../models/usuario.model');
 const mail = require('./mail.service');
+const suscripcionService = require('./suscripcion.service');
 const { AppError } = require('../middleware/errores');
 const { esContrasenaValida, MSG_CONTRASENA } = require('../middleware/validar');
 
@@ -54,4 +55,16 @@ async function cambiarContrasena(idUsuario, actual, nueva) {
   await usuarioModel.actualizarContrasena(idUsuario, await bcrypt.hash(nueva, 10));
 }
 
-module.exports = { registrar, iniciarSesion, solicitarRecuperacion, restablecerContrasena, cambiarContrasena };
+async function eliminarCuenta(idUsuario, contrasena) {
+  const usuario = await usuarioModel.buscarPorId(idUsuario);
+  if (!usuario || !(await bcrypt.compare(String(contrasena || ''), usuario.contrasena_hash))) {
+    throw new AppError('La contraseña no es correcta', 400, 'CREDENCIALES_INVALIDAS');
+  }
+  if (usuario.rol === 'administrador' && (await usuarioModel.contarAdministradores()) <= 1) {
+    throw new AppError('No puedes eliminar la única cuenta de administrador', 409, 'ULTIMO_ADMIN');
+  }
+  await suscripcionService.cancelarCobroRecurrente(idUsuario);
+  await usuarioModel.eliminar(idUsuario);
+}
+
+module.exports = { registrar, iniciarSesion, solicitarRecuperacion, restablecerContrasena, cambiarContrasena, eliminarCuenta };

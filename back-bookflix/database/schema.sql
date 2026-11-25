@@ -62,16 +62,6 @@ CREATE TABLE IF NOT EXISTS tokens_recuperacion (
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS solicitudes_arco (
-  id_solicitud INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario INT NOT NULL,
-  tipo ENUM('acceso','rectificacion','cancelacion','oposicion') NOT NULL,
-  descripcion TEXT NULL,
-  estado VARCHAR(20) NOT NULL DEFAULT 'pendiente',
-  fecha_solicitud DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
-
 -- ol_key = identificador del libro en Open Library (ej. /works/OL123W); ia_id = item de Internet Archive con el texto
 CREATE TABLE IF NOT EXISTS libros (
   id_libro INT AUTO_INCREMENT PRIMARY KEY,

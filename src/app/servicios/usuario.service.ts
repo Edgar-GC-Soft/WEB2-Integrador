@@ -8,5 +8,5 @@ export class UsuarioService {
 
   actualizarNombre(nombre: string) { return this.http.put<{ mensaje: string }>(`${API_URL}/usuarios/perfil`, { nombre }); }
   cambiarContrasena(actual: string, nueva: string) { return this.http.put<{ mensaje: string }>(`${API_URL}/usuarios/contrasena`, { actual, nueva }); }
-  solicitudArco(tipo: string, descripcion: string) { return this.http.post<{ mensaje: string }>(`${API_URL}/usuarios/arco`, { tipo, descripcion }); }
+  eliminarCuenta(contrasena: string) { return this.http.delete<{ mensaje: string }>(`${API_URL}/usuarios/cuenta`, { body: { contrasena } }); }
 }

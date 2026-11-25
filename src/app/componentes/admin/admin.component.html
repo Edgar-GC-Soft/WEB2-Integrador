@@ -1,4 +1,5 @@
-<h1>Administración del catálogo</h1>
+<h1>Administración</h1>
+<p class="subtitulo">Importa y activa los libros del catálogo.</p>
 
 <div class="tarjeta">
   <h2 style="margin-top:0">Importar libros</h2>
@@ -20,7 +21,7 @@
 
   @if (resumen(); as r) {
     <div class="aviso-caja">
-      Importados: <strong>{{ r.importados }}</strong> · Omitidos (ya existían): <strong>{{ r.omitidos }}</strong> · Con error: <strong>{{ r.errores }}</strong>
+      Importados: <strong>{{ r.importados }}</strong>   Omitidos (ya existían): <strong>{{ r.omitidos }}</strong>   Con error: <strong>{{ r.errores }}</strong>
       @if (r.detalle.length) {
         <ul>@for (d of r.detalle; track $index) { <li>{{ d }}</li> }</ul>
       }

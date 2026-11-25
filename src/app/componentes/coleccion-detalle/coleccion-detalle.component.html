@@ -1,4 +1,4 @@
-<p><a routerLink="/colecciones">← Volver a mis colecciones</a></p>
+<a class="volver" routerLink="/colecciones">← Volver a mi rincón</a>
 @if (error()) {
   <p class="error">{{ error() }}</p>
 } @else if (coleccion(); as c) {
@@ -6,14 +6,15 @@
   @if (c.libros.length === 0) {
     <p class="vacio">Esta colección está vacía. Agrega libros desde el detalle de cada libro en el <a routerLink="/catalogo">catálogo</a>.</p>
   } @else {
-    <div class="grid-libros">
+    <div class="repisa-grid" style="margin-top:28px">
       @for (libro of c.libros; track libro.id) {
         <div>
-          <app-libro-card [libro]="libro" />
+          <app-libro-card [libro]="libro" [repisa]="true" />
           <button class="btn-link" (click)="quitar(libro)">Quitar de la colección</button>
         </div>
       }
     </div>
+    <div class="repisa"></div>
   }
 } @else {
   <p class="vacio">Cargando...</p>

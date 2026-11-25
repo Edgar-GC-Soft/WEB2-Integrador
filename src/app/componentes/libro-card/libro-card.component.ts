@@ -10,4 +10,5 @@ import { Libro } from '../../modelos/modelos';
 })
 export class LibroCardComponent {
   @Input({ required: true }) libro!: Libro;
+  @Input() repisa = false;
 }

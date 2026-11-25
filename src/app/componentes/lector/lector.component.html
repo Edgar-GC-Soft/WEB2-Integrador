@@ -1,57 +1,64 @@
-<div class="lector" [class.oscuro]="prefs().modoOscuro">
-  <div class="lector-barra arriba">
-    <a class="btn btn-sec" [routerLink]="['/libro', id_]">← Volver</a>
-    <strong>{{ fragmento()?.titulo }}</strong>
-    <button class="btn btn-sec" (click)="panelAbierto.set(!panelAbierto())">Personalizar</button>
+<div class="lector-wrap" [class.oscuro]="prefs().modoOscuro">
+  <div class="luz"></div>
+  <div class="lector-vineta"></div>
+
+  <div class="lector-top">
+    <a [routerLink]="['/libro', id_]"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Volver</a>
+    <div class="titulo">{{ fragmento()?.titulo }}</div>
+    <span class="nota">Internet Archive</span>
   </div>
+
+  <div class="lector-pagina">
+    <div class="lector-kicker">Lectura</div>
+    <div class="lector-regla"></div>
+    <div class="lector-texto" [style.font-size.px]="prefs().tamanoLetra" [style.line-height]="prefs().interlineado" [style.font-family]="fuente()">
+      @if (cargando()) {
+        <p>Cargando el texto del libro...</p>
+      } @else if (error()) {
+        <p class="error">{{ error() }}</p>
+        <button class="btn" (click)="reintentar()">Reintentar</button>
+      } @else {
+        @for (p of fragmento()!.parrafos; track $index) { <p>{{ p }}</p> }
+      }
+    </div>
+  </div>
+  <p class="libro-autor" style="position:relative;z-index:2;text-align:center;margin-top:18px;color:var(--suave)">Texto obtenido de Internet Archive por OCR: puede contener errores de lectura. Atajos: flechas ← →.</p>
 
   @if (panelAbierto()) {
     @if (auth.esSuscriptor()) {
       <div class="panel-pref">
-        <button class="btn btn-sec" (click)="cambiar({ modoOscuro: !prefs().modoOscuro })">{{ prefs().modoOscuro ? 'Modo claro' : 'Modo oscuro' }}</button>
-        <span>
-          Letra:
-          <button class="btn btn-sec" (click)="cambiarTamano(-1)" aria-label="Letra más pequeña">A-</button>
+        <div class="f"><span>Tamaño</span>
+          <button class="lector-btn" (click)="cambiarTamano(-1)" aria-label="Letra más pequeña">A-</button>
           {{ prefs().tamanoLetra }}
-          <button class="btn btn-sec" (click)="cambiarTamano(1)" aria-label="Letra más grande">A+</button>
-        </span>
-        <label>Tipografía
-          <select [value]="prefs().tipografia" (change)="cambiarTipografia($any($event.target).value)">
-            <option value="serif">Con serif</option>
-            <option value="sans">Sin serif</option>
-            <option value="mono">Monoespaciada</option>
-          </select>
-        </label>
-        <label>Interlineado
-          <input type="range" min="1.2" max="2.4" step="0.1" [value]="prefs().interlineado" (change)="cambiarInterlineado($any($event.target).value)">
-        </label>
+          <button class="lector-btn" (click)="cambiarTamano(1)" aria-label="Letra más grande">A+</button></div>
+        <div class="f"><span>Letra</span>
+          <button class="lector-btn" [class.on]="prefs().tipografia === 'serif'" (click)="cambiarTipografia('serif')">Serif</button>
+          <button class="lector-btn" [class.on]="prefs().tipografia === 'sans'" (click)="cambiarTipografia('sans')">Sans</button>
+          <button class="lector-btn" [class.on]="prefs().tipografia === 'mono'" (click)="cambiarTipografia('mono')">Mono</button></div>
+        <div class="f"><span>Fondo</span>
+          <button class="lector-btn" [class.on]="!prefs().modoOscuro" (click)="cambiar({ modoOscuro: false })">Crema</button>
+          <button class="lector-btn" [class.on]="prefs().modoOscuro" (click)="cambiar({ modoOscuro: true })">Noche cálida</button></div>
+        <div class="f"><span>Interlineado</span>
+          <input type="range" min="1.2" max="2.4" step="0.1" [value]="prefs().interlineado" (change)="cambiarInterlineado($any($event.target).value)"></div>
       </div>
     } @else {
       <div class="panel-pref">
-        <span>🔒 La personalización del lector (modo oscuro, tamaño de letra, tipografía e interlineado) es exclusiva de suscriptores.</span>
+        <span>La personalización del lector (fondo, tamaño de letra, tipografía e interlineado) es exclusiva de suscriptores.</span>
         <a class="btn" routerLink="/planes">Ver planes</a>
       </div>
     }
   }
 
-  <div class="lector-texto" [style.font-size.px]="prefs().tamanoLetra" [style.line-height]="prefs().interlineado" [style.font-family]="fuente()">
-    @if (cargando()) {
-      <p>Cargando el texto del libro...</p>
-    } @else if (error()) {
-      <p class="error">{{ error() }}</p>
-      <button class="btn" (click)="reintentar()">Reintentar</button>
-    } @else {
-      @for (p of fragmento()!.parrafos; track $index) { <p>{{ p }}</p> }
-    }
-  </div>
-
   @if (fragmento(); as f) {
-    <div class="lector-barra">
-      <button class="btn btn-sec" [disabled]="f.indice === 0 || cargando()" (click)="anterior()">Anterior</button>
-      <input type="range" min="0" [max]="f.total - 1" [value]="f.indice" (change)="irA($any($event.target).value)" aria-label="Posición en el libro">
-      <span>{{ f.indice + 1 }} / {{ f.total }} ({{ progreso() }}%)</span>
-      <button class="btn btn-sec" [disabled]="f.indice >= f.total - 1 || cargando()" (click)="siguiente()">Siguiente</button>
+    <div class="lector-pill">
+      <button class="lector-btn" aria-label="Página anterior" [disabled]="f.indice === 0 || cargando()" (click)="anterior()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="prog">
+        <div><span>Parte {{ f.indice + 1 }} de {{ f.total }}</span><span style="color:var(--suave)">{{ progreso() }}%</span></div>
+        <div class="barra"><b [style.width.%]="progreso()"></b></div>
+      </div>
+      <button class="lector-btn" aria-label="Página siguiente" [disabled]="f.indice >= f.total - 1 || cargando()" (click)="siguiente()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      <div class="sep"></div>
+      <button class="lector-btn" aria-label="Ajustes de lectura" style="font-family:var(--serif);font-size:17px" (click)="panelAbierto.set(!panelAbierto())">Aa</button>
     </div>
   }
 </div>
-<p class="libro-autor espacio">Texto obtenido de Internet Archive por OCR: puede contener errores de lectura. Atajos: flechas ← →.</p>

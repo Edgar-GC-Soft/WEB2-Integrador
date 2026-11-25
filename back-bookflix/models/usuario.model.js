@@ -54,12 +54,17 @@ async function marcarTokenUsado(idToken) {
   await pool.query('UPDATE tokens_recuperacion SET usado = 1 WHERE id_token = ?', [idToken]);
 }
 
-// --- Derechos ARCO ---
-async function crearSolicitudArco(idUsuario, tipo, descripcion) {
-  await pool.query('INSERT INTO solicitudes_arco (id_usuario, tipo, descripcion) VALUES (?, ?, ?)', [idUsuario, tipo, descripcion || null]);
+// Borra al usuario; sus favoritos, colecciones, historial, suscripciones y pagos se borran en cascada
+async function eliminar(id) {
+  await pool.query('DELETE FROM usuarios WHERE id_usuario = ?', [id]);
+}
+
+async function contarAdministradores() {
+  const [[r]] = await pool.query("SELECT COUNT(*) AS total FROM usuarios u JOIN roles r ON r.id_rol = u.id_rol WHERE r.nombre = 'administrador'");
+  return r.total;
 }
 
 module.exports = {
   crear, buscarPorCorreo, buscarPorId, actualizarNombre, actualizarContrasena, actualizarIndicadorSuscripcion,
-  crearToken, buscarTokenVigente, marcarTokenUsado, crearSolicitudArco
+  crearToken, buscarTokenVigente, marcarTokenUsado, eliminar, contarAdministradores
 };

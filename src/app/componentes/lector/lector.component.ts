@@ -7,8 +7,8 @@ import { Fragmento, PreferenciasLector } from '../../modelos/modelos';
 import { mensajeError } from '../../util/errores';
 
 const FUENTES: Record<string, string> = {
-  serif: "Georgia, 'Times New Roman', serif",
-  sans: "system-ui, 'Segoe UI', sans-serif",
+  serif: "'Fraunces', Georgia, serif",
+  sans: "'DM Sans', system-ui, sans-serif",
   mono: "'Courier New', monospace"
 };
 

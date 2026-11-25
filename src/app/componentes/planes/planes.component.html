@@ -1,25 +1,29 @@
-<h1>Planes</h1>
+<div class="planes-titulo">
+  <h1>Lee gratis.<br>Mejora cuando quieras.</h1>
+  <p>Todo el catálogo es gratis. Premium te deja leer a tu manera y guardar todo sin límites.</p>
+</div>
 
 <div class="planes">
   <div class="tarjeta plan">
-    <h3>Gratuito</h3>
+    <div class="etq">Gratuito</div>
     <div class="precio">$0</div>
     <ul>
-      <li>Catálogo completo y lector estándar</li>
-      <li>Hasta 5 favoritos</li>
-      <li>Hasta 2 colecciones</li>
-      <li>Recomendaciones de lectura</li>
+      <li>✓ Catálogo completo y lector estándar</li>
+      <li>✓ Recomendaciones de lectura</li>
+      <li class="no"> Hasta 5 favoritos</li>
+      <li class="no"> Hasta 2 colecciones</li>
     </ul>
   </div>
-  <div class="tarjeta plan plan-destacado">
-    <h3>Mensual</h3>
+  <div class="plan plan-destacado">
+    <div class="sello">RECOMENDADO</div>
+    <div class="etq">Mensual</div>
     <div class="precio">$69 <small>MXN / mes</small></div>
-    <p class="libro-autor">IVA incluido. Pago único por un mes de acceso, sin renovación automática.</p>
+    <p>IVA incluido. Pago único por un mes de acceso, sin renovación automática.</p>
     <ul>
-      <li>Todo lo del plan gratuito</li>
-      <li>Favoritos y colecciones ilimitados</li>
-      <li>Historial de lectura y continuar donde te quedaste</li>
-      <li>Personalizar el lector: modo oscuro, tamaño de letra, tipografía e interlineado</li>
+      <li>✓ Todo lo del plan gratuito</li>
+      <li>✓ Favoritos y colecciones ilimitados</li>
+      <li>✓ Historial de lectura y continuar donde te quedaste</li>
+      <li>✓ Personaliza tu lectura: modo oscuro, tamaño, tipografía e interlineado</li>
     </ul>
   </div>
 </div>
@@ -27,7 +31,11 @@
 @if (!auth.usuario()) {
   <div class="aviso-caja">Para suscribirte necesitas una cuenta. <a routerLink="/login">Inicia sesión</a> o <a routerLink="/registro">regístrate</a>.</div>
 } @else if (auth.plan(); as plan) {
-  @if (plan.esSuscriptor) {
+  @if (auth.esAdmin()) {
+    <div class="tarjeta">
+      <p class="ok"><strong>Como administrador tienes todos los beneficios de suscriptor sin costo.</strong></p>
+    </div>
+  } @else if (plan.esSuscriptor) {
     <div class="tarjeta">
       @if (plan.estado === 'activa') {
         <p class="ok"><strong>Tienes acceso mensual activo.</strong></p>

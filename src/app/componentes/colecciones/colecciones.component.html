@@ -1,6 +1,9 @@
-<h1>Colecciones</h1>
+<div class="encabezado">
+  <h1>Mi rincón</h1>
+  <div class="tabs"><a routerLink="/colecciones" class="on">Colecciones</a><a routerLink="/favoritos">Favoritos</a></div>
+</div>
 @if (!auth.esSuscriptor()) {
-  <p class="libro-autor">Plan gratuito: hasta 2 colecciones ({{ colecciones().length }}/2). <a routerLink="/planes">Suscríbete</a> para tener ilimitadas.</p>
+  <div class="aviso-caja">Plan gratuito: hasta 2 colecciones ({{ colecciones().length }}/2). <a routerLink="/planes">Suscríbete</a> para tener ilimitadas.</div>
 }
 
 <form class="fila espacio" (ngSubmit)="crear()">
@@ -13,9 +16,10 @@
 } @else if (colecciones().length === 0) {
   <p class="vacio">Aún no tienes colecciones.</p>
 } @else {
-  <div class="planes espacio">
+  <div class="rincon-grid espacio">
     @for (c of colecciones(); track c.id) {
       <div class="tarjeta">
+        <div class="pila"><i></i><i></i><i></i></div>
         @if (editandoId() === c.id) {
           <div class="fila">
             <input type="text" [name]="'nombre' + c.id" maxlength="100" [(ngModel)]="nombreEditado">
@@ -23,7 +27,7 @@
             <button class="btn btn-sec" (click)="editandoId.set(null)">Cancelar</button>
           </div>
         } @else {
-          <h3 style="margin:0">{{ c.nombre }}</h3>
+          <h3 class="rincon-nombre">{{ c.nombre }}</h3>
           <p class="libro-autor">{{ c.totalLibros }} {{ c.totalLibros === 1 ? 'libro' : 'libros' }}</p>
           <div class="fila">
             <a class="btn" [routerLink]="['/colecciones', c.id]">Abrir</a>

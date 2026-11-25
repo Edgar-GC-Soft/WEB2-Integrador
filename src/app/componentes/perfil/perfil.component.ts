@@ -24,14 +24,16 @@ export class PerfilComponent {
   nombre = this.auth.usuario()?.nombre || '';
   contrasenaActual = '';
   contrasenaNueva = '';
-  tipoArco = '';
-  descripcionArco = '';
+  contrasenaEliminar = '';
   errorContrasena = signal('');
   cancelando = signal(false);
+  errorEliminar = signal('');
+  eliminando = signal(false);
 
   textoPlan = computed(() => {
     const p = this.auth.plan();
     if (!p) return '';
+    if (this.auth.esAdmin()) return 'Acceso completo como administrador (sin costo)';
     switch (p.estado) {
       case 'activa': return 'Acceso mensual activo';
       case 'cancelada': return p.esSuscriptor ? 'Suscripción cancelada (conservas los beneficios hasta el fin del periodo)' : 'Plan gratuito (suscripción cancelada)';
@@ -73,11 +75,14 @@ export class PerfilComponent {
     });
   }
 
-  enviarArco() {
-    if (!this.tipoArco) { this.avisos.info('Elige el tipo de solicitud.'); return; }
-    this.usuarioService.solicitudArco(this.tipoArco, this.descripcionArco.trim()).subscribe({
-      next: (r) => { this.tipoArco = ''; this.descripcionArco = ''; this.avisos.exito(r.mensaje); },
-      error: (e) => this.avisos.error(mensajeError(e))
+  eliminarCuenta() {
+    this.errorEliminar.set('');
+    if (!this.contrasenaEliminar) { this.errorEliminar.set('Escribe tu contraseña para confirmar.'); return; }
+    if (!confirm('¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) return;
+    this.eliminando.set(true);
+    this.usuarioService.eliminarCuenta(this.contrasenaEliminar).subscribe({
+      next: (r) => { this.avisos.exito(r.mensaje); this.auth.logout(); },
+      error: (e) => { this.eliminando.set(false); this.errorEliminar.set(mensajeError(e)); }
     });
   }
 }

@@ -18,7 +18,15 @@ const aFecha = (valor) => (valor ? new Date(valor) : null);
 
 // Plan actual del usuario. Es suscriptor si la suscripcion esta activa o si cancelo
 // pero aun no termina el periodo que ya pago.
+// Los administradores siempre tienen los beneficios de suscriptor, sin pagar.
 async function obtenerPlan(idUsuario) {
+  const plan = await planSegunSuscripcion(idUsuario);
+  const usuario = await usuarioModel.buscarPorId(idUsuario);
+  if (usuario && usuario.rol === 'administrador') return { ...plan, esSuscriptor: true, esAdmin: true };
+  return plan;
+}
+
+async function planSegunSuscripcion(idUsuario) {
   let sub = await suscripcionModel.buscarActualDeUsuario(idUsuario);
   if (!sub) return { esSuscriptor: false, estado: 'ninguna', fechaRenovacion: null, fechaFin: null };
   if (sub.estado === 'activa' && sub.fecha_fin && new Date(sub.fecha_fin) <= new Date()) {
@@ -218,6 +226,14 @@ async function cancelar(idUsuario) {
   return obtenerPlan(idUsuario);
 }
 
+// Al eliminar la cuenta: si hay una suscripcion recurrente activa en PayPal se cancela para que no se le siga cobrando
+async function cancelarCobroRecurrente(idUsuario) {
+  const sub = await suscripcionModel.buscarActualDeUsuario(idUsuario);
+  if (sub && sub.estado === 'activa' && sub.fecha_proxima_renovacion) {
+    await paypal.cancelarSuscripcion(sub.paypal_subscription_id, 'Cuenta eliminada por el usuario');
+  }
+}
+
 // ---------- Webhooks de PayPal ----------
 
 // Si la suscripcion aun no existe en la base (el webhook llego antes que la confirmacion), se crea con custom_id
@@ -311,5 +327,5 @@ function infoPlanes() {
 }
 
 module.exports = {
-  obtenerPlan, crearOrden, capturarOrden, reanudarPagoPendiente, confirmar, cancelar, procesarWebhook, infoPlanes
+  obtenerPlan, crearOrden, capturarOrden, reanudarPagoPendiente, confirmar, cancelar, cancelarCobroRecurrente, procesarWebhook, infoPlanes
 };

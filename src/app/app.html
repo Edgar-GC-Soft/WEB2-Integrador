@@ -1,6 +1,11 @@
-<app-nav-bar />
-<main class="contenedor">
+@if (mostrarNav()) {
+  <app-nav-bar />
+}
+<!-- En login y registro la vista ocupa toda la pantalla, sin contenedor ni pie -->
+<main [class.contenedor]="mostrarNav()">
   <router-outlet />
 </main>
-<app-pie />
+@if (mostrarNav()) {
+  <app-pie />
+}
 <app-avisos />

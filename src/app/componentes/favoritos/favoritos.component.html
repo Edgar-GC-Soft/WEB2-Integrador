@@ -1,18 +1,23 @@
-<h1>Favoritos</h1>
+<div class="encabezado">
+  <h1>Mi rincón</h1>
+  <div class="tabs"><a routerLink="/colecciones">Colecciones</a><a routerLink="/favoritos" class="on">Favoritos</a></div>
+</div>
 @if (!auth.esSuscriptor()) {
-  <p class="libro-autor">Plan gratuito: hasta 5 favoritos ({{ libros().length }}/5). <a routerLink="/planes">Suscríbete</a> para tener ilimitados.</p>
+  <div class="aviso-caja">Plan gratuito: hasta 5 favoritos ({{ libros().length }}/5). <a routerLink="/planes" style="color:var(--acento);font-weight:700">Suscríbete</a> para tener ilimitados.</div>
 }
 @if (cargando()) {
   <p class="vacio">Cargando...</p>
 } @else if (libros().length === 0) {
-  <p class="vacio">Aún no tienes favoritos. Explora el <a routerLink="/catalogo">catálogo</a>.</p>
+  <p class="vacio">Aún no tienes favoritos. Explora el <a routerLink="/catalogo" style="color:var(--acento)">catálogo</a>.</p>
 } @else {
-  <div class="grid-libros espacio">
+  <h2 style="margin-top:36px">Tus favoritos</h2>
+  <div class="repisa-grid">
     @for (libro of libros(); track libro.id) {
       <div>
-        <app-libro-card [libro]="libro" />
-        <button class="btn-link" (click)="quitar(libro)">Quitar de favoritos</button>
+        <app-libro-card [libro]="libro" [repisa]="true" />
+        <button class="btn-link" (click)="quitar(libro)">Quitar</button>
       </div>
     }
   </div>
+  <div class="repisa"></div>
 }

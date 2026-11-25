@@ -6,6 +6,6 @@ router.use(verificarToken);
 router.get('/perfil', c.perfil);
 router.put('/perfil', c.actualizarPerfil);
 router.put('/contrasena', c.cambiarContrasena);
-router.post('/arco', c.solicitudArco);
+router.delete('/cuenta', c.eliminarCuenta);
 
 module.exports = router;
