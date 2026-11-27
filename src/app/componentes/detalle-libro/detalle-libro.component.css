@@ -1,0 +1,14 @@
+.detalle { position:relative; display:flex; gap:72px; padding:24px 0 40px; flex-wrap:wrap; align-items:center; }
+.detalle .luz { left:-260px; bottom:-300px; width:700px; height:700px; }
+.detalle .portada { position:relative; flex:0 0 320px; width:320px; border-radius:6px 14px 14px 6px; padding:34px 26px; box-shadow:inset 10px 0 12px -6px rgba(0,0,0,.4),inset 0 0 0 8px rgba(255,255,255,.14),0 40px 60px rgba(74,63,53,.4); }
+.detalle img.portada { padding:0; box-shadow:0 40px 60px rgba(74,63,53,.4); }
+.detalle .sin-portada .tipo { font-size:12px; letter-spacing:4px; }
+.detalle .sin-portada .nombre { font-size:46px; line-height:1.02; margin:auto 0; }
+.detalle-info { position:relative; flex:1 1 460px; display:flex; flex-direction:column; gap:18px; min-width:0; }
+.detalle-info h1 { font-size:84px; line-height:.98; letter-spacing:-2.5px; margin:0; }
+@media (max-width:760px) { .detalle-info h1 { font-size:48px; } .detalle .portada { flex-basis:240px; width:240px; } }
+.detalle-meta { font-size:18px; color:var(--soft); }
+.corazon { width:52px; height:52px; border-radius:999px; background:rgba(247,242,233,.92); display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; }
+.datos { display:flex; gap:40px; margin-top:18px; flex-wrap:wrap; }
+.datos .e { font-size:12px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+.datos .v { font-family:var(--serif); font-size:20px; margin-top:4px; }

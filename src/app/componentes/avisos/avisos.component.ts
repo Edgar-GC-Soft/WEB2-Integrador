@@ -4,7 +4,8 @@ import { AvisoService } from '../../servicios/aviso.service';
 @Component({
   selector: 'app-avisos',
   standalone: true,
-  templateUrl: './avisos.component.html'
+  templateUrl: './avisos.component.html',
+  styleUrl: './avisos.component.css'
 })
 export class AvisosComponent {
   servicio = inject(AvisoService);

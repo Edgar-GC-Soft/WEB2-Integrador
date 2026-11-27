@@ -1,0 +1,9 @@
+.historial-lista { display:flex; flex-direction:column; max-width:980px; }
+.historial-fila { display:flex; gap:22px; align-items:center; padding:20px 0; border-bottom:1px solid var(--borde); transition:transform .5s ease; }
+.historial-fila:hover { transform:translateX(6px); }
+.historial-fila .portada { width:62px; flex:0 0 62px; padding:6px; box-shadow:inset 5px 0 7px -4px rgba(0,0,0,.3),0 8px 14px rgba(74,63,53,.3); }
+.historial-fila .portada .tipo, .historial-fila .portada .regla, .historial-fila .portada .por { display:none; }
+.historial-fila .portada .nombre { font-size:9px; }
+.historial-fila .info { flex:1; min-width:0; }
+.historial-fila .t { font-family:var(--serif); font-size:24px; }
+.historial-fila .a { font-size:14px; color:var(--muted); margin-top:2px; }

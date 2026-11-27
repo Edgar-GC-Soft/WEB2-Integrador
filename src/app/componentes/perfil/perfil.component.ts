@@ -13,7 +13,8 @@ import { MSG_CONTRASENA, esContrasenaValida } from '../../util/validadores';
   selector: 'app-perfil',
   standalone: true,
   imports: [FormsModule, RouterLink, DatePipe],
-  templateUrl: './perfil.component.html'
+  templateUrl: './perfil.component.html',
+  styleUrl: './perfil.component.css'
 })
 export class PerfilComponent {
   auth = inject(AuthService);

@@ -12,7 +12,8 @@ import { PagoPaypalComponent } from '../pago-paypal/pago-paypal.component';
   selector: 'app-planes',
   standalone: true,
   imports: [RouterLink, DatePipe, PagoPaypalComponent],
-  templateUrl: './planes.component.html'
+  templateUrl: './planes.component.html',
+  styleUrl: './planes.component.css'
 })
 export class PlanesComponent implements OnInit {
   auth = inject(AuthService);

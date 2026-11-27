@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
   selector: 'app-pie',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './pie.component.html'
+  templateUrl: './pie.component.html',
+  styleUrl: './pie.component.css'
 })
 export class PieComponent {}

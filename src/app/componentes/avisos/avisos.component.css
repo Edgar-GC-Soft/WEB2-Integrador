@@ -1,0 +1,4 @@
+.avisos { position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:8px; z-index:200; max-width:340px; }
+.aviso { background:var(--cafe); color:#f6efe0; padding:12px 18px; border-radius:18px; font-size:.92rem; box-shadow:0 10px 28px rgba(0,0,0,.25); }
+.aviso.exito { background:var(--ok); }
+.aviso.error { background:var(--error); }

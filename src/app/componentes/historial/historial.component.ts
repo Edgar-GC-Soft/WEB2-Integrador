@@ -9,7 +9,8 @@ import { mensajeError } from '../../util/errores';
   selector: 'app-historial',
   standalone: true,
   imports: [RouterLink, DatePipe],
-  templateUrl: './historial.component.html'
+  templateUrl: './historial.component.html',
+  styleUrl: './historial.component.css'
 })
 export class HistorialComponent implements OnInit {
   private biblioteca = inject(BibliotecaService);

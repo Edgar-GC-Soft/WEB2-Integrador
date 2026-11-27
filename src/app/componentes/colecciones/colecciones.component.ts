@@ -11,7 +11,8 @@ import { mensajeError } from '../../util/errores';
   selector: 'app-colecciones',
   standalone: true,
   imports: [FormsModule, RouterLink],
-  templateUrl: './colecciones.component.html'
+  templateUrl: './colecciones.component.html',
+  styleUrl: './colecciones.component.css'
 })
 export class ColeccionesComponent implements OnInit {
   auth = inject(AuthService);

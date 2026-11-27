@@ -6,7 +6,8 @@ import { Libro } from '../../modelos/modelos';
   selector: 'app-libro-card',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './libro-card.component.html'
+  templateUrl: './libro-card.component.html',
+  styleUrl: './libro-card.component.css'
 })
 export class LibroCardComponent {
   @Input({ required: true }) libro!: Libro;

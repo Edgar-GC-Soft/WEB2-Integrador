@@ -16,7 +16,8 @@ const FUENTES: Record<string, string> = {
   selector: 'app-lector',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './lector.component.html'
+  templateUrl: './lector.component.html',
+  styleUrl: './lector.component.css'
 })
 export class LectorComponent implements OnInit {
   auth = inject(AuthService);

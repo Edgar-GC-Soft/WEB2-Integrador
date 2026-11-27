@@ -12,7 +12,8 @@ import { mensajeError } from '../../util/errores';
   selector: 'app-detalle-libro',
   standalone: true,
   imports: [FormsModule, RouterLink],
-  templateUrl: './detalle-libro.component.html'
+  templateUrl: './detalle-libro.component.html',
+  styleUrl: './detalle-libro.component.css'
 })
 export class DetalleLibroComponent implements OnInit {
   auth = inject(AuthService);

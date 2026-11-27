@@ -11,7 +11,8 @@ import { mensajeError } from '../../util/errores';
   selector: 'app-inicio',
   standalone: true,
   imports: [RouterLink, LibroCardComponent],
-  templateUrl: './inicio.component.html'
+  templateUrl: './inicio.component.html',
+  styleUrl: './inicio.component.css'
 })
 export class InicioComponent implements OnInit {
   auth = inject(AuthService);

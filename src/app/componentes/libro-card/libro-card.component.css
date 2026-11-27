@@ -1,0 +1,3 @@
+.libro-card { display:flex; flex-direction:column; gap:12px; transition:transform .6s ease; color:inherit; }
+.libro-card:hover { transform:translateY(-8px); color:inherit; }
+.libro-titulo { font-weight:700; font-size:15px; line-height:1.25; }
